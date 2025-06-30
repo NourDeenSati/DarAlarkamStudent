@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
+
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       initialBinding: HomeBinding(),

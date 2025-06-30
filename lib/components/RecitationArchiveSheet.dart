@@ -19,7 +19,7 @@ class _RecitationArchiveSheetState extends State<RecitationArchiveSheet> {
   void initState() {
     super.initState();
     ctrl = Get.find<StudentArchiveController>();
-    // إذا لم تبدأ التحميل بعد، شغّل fetchRecitations
+
     if (!ctrl.isLoading.value && ctrl.recitations.isEmpty) {
       ctrl.fetchRecitations();
     }
@@ -67,7 +67,7 @@ class _RecitationArchiveSheetState extends State<RecitationArchiveSheet> {
         if (heard.isEmpty) {
           return const Padding(
             padding: EdgeInsets.all(24),
-            child: Center(child: Text('لا توجد صفحات مسموعة')),
+            child: Center(child: Text('لا توجد صفحات مسمعة')),
           );
         }
 
@@ -94,9 +94,13 @@ class _RecitationArchiveSheetState extends State<RecitationArchiveSheet> {
               // عرض الصفحات المسموعة
               ...heard.map((item) {
                 return ListTile(
-                  leading: Icon(Icons.check_circle, color: Colors.green),
+                  leading: Icon(Icons.touch_app_sharp, color: Colors.green),
                   title: Text('صفحة ${item.page}'),
                   subtitle: Text(item.result ?? 'لم يُسجل نتيجة'),
+                  onTap: () {
+                    
+                  },
+                  
                 );
               }).toList(),
               const SizedBox(height: 16),

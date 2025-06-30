@@ -25,7 +25,9 @@ class HomeScreen extends GetView<HomeController> {
   }
 
   final LogoutController logoutController = Get.put(LogoutController());
-  final my_carousel.MyCarouselController MycarouselController = Get.put(my_carousel.MyCarouselController());
+  final my_carousel.MyCarouselController MycarouselController = Get.put(
+    my_carousel.MyCarouselController(),
+  );
   final PageController pageController = PageController(viewportFraction: 0.7);
 
   Future<void> logout() async {
@@ -44,15 +46,21 @@ class HomeScreen extends GetView<HomeController> {
     return Scaffold(
       appBar: AppBar(
         // ننقل الـ Row هنا إلى title
-        title: Obx(() => Row(
-              children: [
-                Text(
-                  'مرحباً بك ${homeController.userName.value} !',
-                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold,color: Colors.black),
+        title: Obx(
+          () => Row(
+            children: [
+              Text(
+                'مرحباً بك ${homeController.userName.value} !',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-                const Spacer(),
-              ],
-            )),
+              ),
+              const Spacer(),
+            ],
+          ),
+        ),
         // الـ actions تضم أيقونة تسجيل الخروج فقط
         actions: [
           IconButton(
@@ -61,15 +69,17 @@ class HomeScreen extends GetView<HomeController> {
           ),
         ],
       ),
-      body: Obx(() => IndexedStack(
-            index: controller.currentIndex.value,
-            children: [
-              _MainContent(),
-              const SaveplaneScreen(),
-              const SaveplaneScreen(),
-              const SaveplaneScreen(),
-            ],
-          )),
+      body: Obx(
+        () => IndexedStack(
+          index: controller.currentIndex.value,
+          children: [
+            _MainContent(),
+            const SaveplaneScreen(),
+            const SaveplaneScreen(),
+            const SaveplaneScreen(),
+          ],
+        ),
+      ),
       bottomNavigationBar: Obx(() {
         final selectedIndex = controller.currentIndex.value;
         return NavigationBar(
@@ -132,7 +142,6 @@ class _MainContent extends StatelessWidget {
     });
   }
 
-  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -142,7 +151,6 @@ class _MainContent extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 30),
-          
 
             const SizedBox(height: 30),
             const MyCarousel(),
@@ -169,20 +177,22 @@ class _MainContent extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 // قرآن
-       MyAddContainer(
-  text: 'قرآن',
-  iconData: Iconsax.book,
-  onTap: () {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (_) => const RecitationArchiveSheet(),
-    );
-  },
-),
+                MyAddContainer(
+                  text: 'قرآن',
+                  iconData: Iconsax.book,
+                  onTap: () {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.vertical(
+                          top: Radius.circular(20),
+                        ),
+                      ),
+                      builder: (_) =>  RecitationArchiveSheet(),
+                    );
+                  },
+                ),
 
                 // حضور
                 MyAddContainer(
