@@ -35,6 +35,7 @@ class HomeScreen extends GetView<HomeController> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
     await prefs.remove('name');
+
     Get.offAll(() => SigninScreen());
   }
 
@@ -143,23 +144,28 @@ class _MainContent extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
+  @override
+Widget build(BuildContext context) {
+  return RefreshIndicator(
+    onRefresh: () async {
+      await studentController.loadData();
+      await archiveCtrl.fetchAttendance();
+      await archiveCtrl.fetchNotes(); // مثلاً لجلب كل أنواع الأرشيف
+      await archiveCtrl.fetchRecitations();
+      await archiveCtrl.fetchSabrs();
+    },
+    child: SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(), // مهم لتفعيل السحب حتى لو المحتوى قصير
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const SizedBox(height: 30),
-
-            const SizedBox(height: 30),
-            const MyCarousel(),
-
+            // const SizedBox(height: 30),
+            // const MyCarousel(),
             const SizedBox(height: 40),
             const MotivationalStatsSection(),
-
             const SizedBox(height: 40),
-
             Row(
               children: const [
                 Icon(Iconsax.add_square, color: Color(0XFF049977)),
@@ -172,7 +178,6 @@ class _MainContent extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 40),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -182,6 +187,8 @@ class _MainContent extends StatelessWidget {
                   iconData: Iconsax.book,
                   onTap: () {
                     showModalBottomSheet(
+                      isDismissible: true,
+                      enableDrag: true,
                       context: context,
                       isScrollControlled: true,
                       shape: const RoundedRectangleBorder(
@@ -189,11 +196,10 @@ class _MainContent extends StatelessWidget {
                           top: Radius.circular(20),
                         ),
                       ),
-                      builder: (_) =>  RecitationArchiveSheet(),
+                      builder: (_) => RecitationArchiveSheet(),
                     );
                   },
                 ),
-
                 // حضور
                 MyAddContainer(
                   text: 'حضور',
@@ -211,7 +217,6 @@ class _MainContent extends StatelessWidget {
                     );
                   },
                 ),
-
                 // ملاحظات
                 MyAddContainer(
                   text: 'ملاحظات',
@@ -225,13 +230,10 @@ class _MainContent extends StatelessWidget {
                           top: Radius.circular(20),
                         ),
                       ),
-                      builder:
-                          (_) =>
-                              NotesArchiveSheet(), // <-- بدون const وبلا معاملات
+                      builder: (_) => NotesArchiveSheet(),
                     );
                   },
                 ),
-
                 // السبر
                 MyAddContainer(
                   text: 'السبر',
@@ -251,11 +253,11 @@ class _MainContent extends StatelessWidget {
                 ),
               ],
             ),
-
             const SizedBox(height: 40),
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

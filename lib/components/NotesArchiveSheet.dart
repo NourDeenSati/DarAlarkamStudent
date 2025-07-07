@@ -91,6 +91,7 @@ class _NotesArchiveSheetState extends State<NotesArchiveSheet> {
               const Text(
                 'أرشيف الملاحظات',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                
               ),
               const Divider(),
               ListView.separated(

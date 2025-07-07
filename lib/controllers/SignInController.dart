@@ -29,7 +29,11 @@ class SigninController extends GetxController {
     }
 
     if (password.length < 8) {
-      Get.snackbar("تنبيه", "كلمة المرور يجب أن تكون 8 أحرف على الأقل", colorText: Colors.black);
+      Get.snackbar(
+        "تنبيه",
+        "كلمة المرور يجب أن تكون 8 أحرف على الأقل",
+        colorText: Colors.black,
+      );
       return;
     }
 
@@ -41,7 +45,9 @@ class SigninController extends GetxController {
     };
 
     try {
-      var url = Uri.parse(APIEndpoints.baseUrl + APIEndpoints.authEndPoint.login);
+      var url = Uri.parse(
+        APIEndpoints.baseUrl + APIEndpoints.authEndPoint.login,
+      );
       Map body = {'name': username, 'password': password};
 
       http.Response response = await http
@@ -68,6 +74,7 @@ class SigninController extends GetxController {
           await prefs.setInt('user_id', userId);
           await prefs.setString('user_name', userName);
           await prefs.setInt('circle_id', circleId);
+          await prefs.setBool('isLoggedIn', true); // ✅ هذا هو السطر المفقود
 
           usernameController.clear();
           passwordController.clear();
@@ -75,7 +82,11 @@ class SigninController extends GetxController {
           Get.offAll(() => HomeScreen());
         } else {
           // إذا لم يكن هناك توكن أو مستخدم في الاستجابة
-          Get.snackbar("فشل", json["message"] ?? "فشل تسجيل الدخول", colorText: Colors.black);
+          Get.snackbar(
+            "فشل",
+            json["message"] ?? "فشل تسجيل الدخول",
+            colorText: Colors.black,
+          );
         }
       } else if (response.statusCode == 401) {
         // ✅ إذا كانت الاستجابة تحتوي على خطأ في التحقق من البيانات
@@ -85,12 +96,24 @@ class SigninController extends GetxController {
         } else if (json["message"] == "Validation error.") {
           if (json["errors"] != null) {
             if (json["errors"]["name"] != null) {
-              Get.snackbar("خطأ", "خطأ في اسم المستخدم", colorText: Colors.black);
+              Get.snackbar(
+                "خطأ",
+                "خطأ في اسم المستخدم",
+                colorText: Colors.black,
+              );
             } else if (json["errors"]["password"] != null) {
               // إذا كان الخطأ في كلمة المرور فقط
-              Get.snackbar("خطأ", "كلمة المرور غير صحيحة", colorText: Colors.black);
+              Get.snackbar(
+                "خطأ",
+                "كلمة المرور غير صحيحة",
+                colorText: Colors.black,
+              );
             } else {
-              Get.snackbar("خطأ", "حدث خطأ في البيانات المدخلة", colorText: Colors.black);
+              Get.snackbar(
+                "خطأ",
+                "حدث خطأ في البيانات المدخلة",
+                colorText: Colors.black,
+              );
             }
           }
         } else {
@@ -98,12 +121,24 @@ class SigninController extends GetxController {
         }
       } else {
         // ✅ إذا كان هناك خطأ غير متوقع
-        Get.snackbar("خطأ", "حدث خطأ في الاتصال بالخادم", colorText: Colors.black);
+        Get.snackbar(
+          "خطأ",
+          "حدث خطأ في الاتصال بالخادم",
+          colorText: Colors.black,
+        );
       }
     } on http.ClientException {
-      Get.snackbar("خطأ في الشبكة", "تحقق من اتصال الإنترنت", colorText: Colors.black);
+      Get.snackbar(
+        "خطأ في الشبكة",
+        "تحقق من اتصال الإنترنت",
+        colorText: Colors.black,
+      );
     } on TimeoutException {
-      Get.snackbar("مهلة الاتصال", "الخادم لا يستجيب، حاول مرة أخرى", colorText: Colors.black);
+      Get.snackbar(
+        "مهلة الاتصال",
+        "الخادم لا يستجيب، حاول مرة أخرى",
+        colorText: Colors.black,
+      );
     } catch (e) {
       // ✅ إذا كانت هناك مشكلة غير متوقعة
       Get.snackbar("خطأ", e.toString(), colorText: Colors.black);

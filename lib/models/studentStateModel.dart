@@ -7,6 +7,13 @@ class StudentStatsModel {
   final int mosqueNow;
   final int mosquePrev;
 
+  // بيانات جديدة من ملف الطالب
+  final int id;
+  final String name;
+  final String points;
+  final String level;
+  final String courseName;
+
   StudentStatsModel({
     required this.gainThisWeek,
     required this.gainLastWeek,
@@ -15,11 +22,17 @@ class StudentStatsModel {
     required this.circlePrev,
     required this.mosqueNow,
     required this.mosquePrev,
+    required this.id,
+    required this.name,
+    required this.points,
+    required this.level,
+    required this.courseName,
   });
 
   factory StudentStatsModel.fromResponses({
     required Map<String, dynamic> weeklyJson,
     required Map<String, dynamic> rankingsJson,
+    required Map<String, dynamic> profileJson,
   }) {
     return StudentStatsModel(
       gainThisWeek: (weeklyJson['gain_this_week'] as num).toInt(),
@@ -29,6 +42,11 @@ class StudentStatsModel {
       circlePrev: (rankingsJson['circle']['prev'] as num).toInt(),
       mosqueNow: (rankingsJson['mosque']['now'] as num).toInt(),
       mosquePrev: (rankingsJson['mosque']['prev'] as num).toInt(),
+      id: profileJson['id'],
+      name: profileJson['name'],
+      points: profileJson['points'],
+      level: profileJson['level'],
+      courseName: profileJson['course_name'],
     );
   }
 }

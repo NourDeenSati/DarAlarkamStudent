@@ -44,24 +44,45 @@ class _AttendanceArchiveSheetState extends State<AttendanceArchiveSheet> {
                   Container(width: 120, height: 20, color: Colors.white),
                   const SizedBox(height: 12),
                   // إحصائيات وهمية (3 أسطر)
-                  ...List.generate(3, (_) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Container(width: double.infinity, height: 16, color: Colors.white),
-                  )),
+                  ...List.generate(
+                    3,
+                    (_) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      child: Container(
+                        width: double.infinity,
+                        height: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
                   const SizedBox(height: 12),
                   // قائمة التواريخ وهمية
-                  ...List.generate(5, (_) => Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 6),
-                    child: Row(
-                      children: [
-                        Container(width: 12, height: 12, decoration: BoxDecoration(color: Colors.white, shape: BoxShape.circle)),
-                        const SizedBox(width: 8),
-                        Container(width: 100, height: 14, color: Colors.white),
-                        const Spacer(),
-                        Container(width: 60, height: 14, color: Colors.white),
-                      ],
+                  ...List.generate(
+                    5,
+                    (_) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 12,
+                            height: 12,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            width: 100,
+                            height: 14,
+                            color: Colors.white,
+                          ),
+                          const Spacer(),
+                          Container(width: 60, height: 14, color: Colors.white),
+                        ],
+                      ),
                     ),
-                  )),
+                  ),
                   const SizedBox(height: 16),
                 ],
               ),
@@ -83,70 +104,84 @@ class _AttendanceArchiveSheetState extends State<AttendanceArchiveSheet> {
         final records = model.list;
 
         return Padding(
-          padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 12),
-              Container(
-                width: 40, height: 4,
-                decoration: BoxDecoration(
-                  color: Colors.grey[300],
-                  borderRadius: BorderRadius.circular(2),
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 12),
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[300],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'أرشيف الحضور',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const Divider(),
+                const SizedBox(height: 16),
+                const Center(
+                  child: Text(
+                    'أرشيف الحضور',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ),
+                const Divider(),
 
-              // إحصائيات مجمعة
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Column(
-                  children: statItems.map((e) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(e.key),
-                        Text('${e.value.count} (${e.value.ratio.toStringAsFixed(1)}%)'),
-                      ],
+                // إحصائيات مجمعة
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    children:
+                        statItems.map((e) {
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(e.key),
+                              Text(
+                                '${e.value.count} (${e.value.ratio.toStringAsFixed(1)}%)',
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                const Divider(),
+
+                // قائمة بالتواريخ
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: records.length,
+                  itemBuilder: (_, i) {
+                    final rec = records[i];
+                    return ListTile(
+                      leading: Icon(
+                        Icons.circle,
+                        size: 12,
+                        color:
+                            rec.attendanceType == 'حضور'
+                                ? Colors.green
+                                : rec.attendanceType == 'غياب مبرر'
+                                ? Colors.orange
+                                : rec.attendanceType == 'غياب غير مبرر'
+                                ? Colors.red
+                                : Colors.amber,
+                      ),
+                      title: Text(
+                        '${rec.date.year}-${rec.date.month.toString().padLeft(2, '0')}-${rec.date.day.toString().padLeft(2, '0')}',
+                      ),
+                      subtitle: Text(rec.attendanceType),
                     );
-                  }).toList(),
+                  },
                 ),
-              ),
-              const SizedBox(height: 12),
-              const Divider(),
-
-              // قائمة بالتواريخ
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: records.length,
-                itemBuilder: (_, i) {
-                  final rec = records[i];
-                  return ListTile(
-                    leading: Icon(
-                      Icons.circle, size: 12,
-                      color: rec.attendanceType == 'حضور'
-                          ? Colors.green
-                          : rec.attendanceType == 'غياب مبرر'
-                              ? Colors.orange
-                              : rec.attendanceType == 'غياب غير مبرر'
-                                  ? Colors.red
-                                  : Colors.amber,
-                    ),
-                    title: Text(
-                      '${rec.date.year}-${rec.date.month.toString().padLeft(2, '0')}-${rec.date.day.toString().padLeft(2, '0')}'
-                    ),
-                    subtitle: Text(rec.attendanceType),
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
-            ],
+                const SizedBox(height: 16),
+              ],
+            ),
           ),
         );
       }),
