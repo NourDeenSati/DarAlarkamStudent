@@ -52,6 +52,7 @@ flutter_icons:
 flutter:
   uses-material-design: true
 
+
   assets:
     - assets/fonts/
     - assets/images/1.png
@@ -59,6 +60,7 @@ flutter:
     - assets/mushaf_assets/frame1.jpg
     - assets/mushaf_assets/frame.jpg
     - assets/mushaf_assets/ayah_frame.png
+    - assets/mushaf_assets/frame_t.jpg
 
   fonts:
     - family: IBMPlexSansArabic

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 
 import '../components/mushaf_app_bar.dart';
 import '../components/mushaf_page.dart';
@@ -28,65 +29,99 @@ class MultiPageView extends StatelessWidget {
     return BlocProvider(
       create: (BuildContext context) {
         return PageCubit(
-          () => InitialMultiPageState(startPage: startPage),
+          () => InitialMultiPageState(startPage: startPage, endPage: endPage),
           studentId,
         );
       },
-      child: Scaffold(
-        appBar: mushafAppBar(context: context),
-        backgroundColor: Colors.white,
-        body: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.75,
-                width: MediaQuery.of(context).size.width,
-                child: BlocBuilder<PageCubit, PageStates>(
-                  builder: (context, state) {
-                    if (state is LoadingPageState) {
-                      return WaitingWidget();
-                    }
-                    return PageView.builder(
-                      reverse: true,
-                      onPageChanged: (page) {
-                        context.read<PageCubit>().changeToPage(number: page);
-                      },
-                      controller: controller,
-                      itemBuilder: (context, snapshot) {
-                        return MushafPage();
-                      },
-                      itemCount: (endPage + 1) - startPage,
-                    );
-                  },
-                ),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+      child: BlocListener<PageCubit,PageStates>(
+        listener: (BuildContext context, state) {
+          if (state is FailToStartPage) {
+            Navigator.pop(context);
 
-              BlocBuilder<PageCubit, PageStates>(
-                builder: (BuildContext context, state) {
-                  return OperatorButton(
-                    onPressed: () {
-                      AppFunctions.showQuranDialog(
-                        context,
-                        "هل تريد حفظ الصفحة",
-                        () {
-                          context.read<PageCubit>().savePageTest();
-                          print(context.read<PageCubit>().notes);
+            Get.snackbar(
+              "خطأ",
+              state.error,
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Get.theme.colorScheme.errorContainer,
+              colorText: Get.theme.colorScheme.onErrorContainer,
+            );
+          }
+          if (state is FailurePageState) {
+            Get.snackbar(
+              "خطأ",
+              state.error,
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Get.theme.colorScheme.errorContainer,
+              colorText: Get.theme.colorScheme.onErrorContainer,
+            );
+          }
+          if (state is CompletedListenState) {
+            Navigator.pop(context);
+            Get.snackbar(
+              "تم حفظ التسميع",
+              "التقييم ${state.result}",
+              snackPosition: SnackPosition.BOTTOM,
+              backgroundColor: Get.theme.colorScheme.onPrimary,
+              colorText: Get.theme.colorScheme.onPrimaryContainer,
+            );
+          }
+        },
+        child: Scaffold(
+          appBar: mushafAppBar(context: context),
+          backgroundColor: Colors.white,
+          body: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.75,
+                  width: MediaQuery.of(context).size.width,
+                  child: BlocBuilder<PageCubit, PageStates>(
+                    builder: (context, state) {
+                      if (state is LoadingPageState) {
+                        return WaitingWidget();
+                      }
+                      return PageView.builder(
+                        reverse: false,
+                        onPageChanged: (page) {
+                          context.read<PageCubit>().changeToPage(number: page);
                         },
-                        context.read<PageCubit>().hafezNotes(),
-                        context.read<PageCubit>().tashkeelNotes(),
-                        context.read<PageCubit>().tajweedNotes(),
+                        controller: controller,
+                        itemBuilder: (context, snapshot) {
+                          return MushafPage();
+                        },
+                        itemCount: (endPage + 1) - startPage,
                       );
                     },
-                    text: "حفظ التسميع",
+                  ),
+                ),
+                SizedBox(height: MediaQuery.of(context).size.height * 0.02),
 
-                    enable: true,
-                  );
-                },
-                buildWhen: (p, c) => false,
-              ),
-            ],
+                BlocBuilder<PageCubit, PageStates>(
+                  builder: (BuildContext context, state) {
+                    return OperatorButton(
+                      onPressed: () {
+                        AppFunctions.showQuranDialog(
+                          context,
+                          "إحصائيات الصفحة",
+                              () {
+
+                          },
+                          context.read<PageCubit>().tajweedNotes(),
+                          context.read<PageCubit>().tashkeelNotes(),
+
+                          context.read<PageCubit>().hafezNotes(),
+                        );
+                      },
+                      text: "إحصائيات",
+
+                      enable: true,
+                    );
+                  },
+                  buildWhen: (p, c) => false,
+                ),
+              ],
+            ),
           ),
         ),
       ),

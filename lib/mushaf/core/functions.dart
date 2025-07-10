@@ -82,7 +82,6 @@ class AppFunctions {
                         ),
                         onPressed: () {
                           Navigator.of(context).pop();
-                          Navigator.of(context).pop();
                           onConfirm();
                         },
                         child: const Text('تأكيد'),

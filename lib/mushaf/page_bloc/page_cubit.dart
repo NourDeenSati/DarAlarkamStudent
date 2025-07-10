@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../core/api_service.dart';
 import '../core/data.dart';
 import '../modules/line.dart';
 import '../modules/note.dart';
@@ -9,23 +10,68 @@ import 'page_states.dart';
 class PageCubit extends Cubit<PageStates> {
   int pageNumber = 3;
   List<Line> pageLines = [];
+  int startPage = -1;
+
   List<Note> notes = [];
-  int startPage = 0;
+  String studentName = "";
+
   final String studentId;
-  final Set<String> _highlightedWords = {}; // For tracking highlighted words
+  var endPage = -1;
+  final Set<String> _highlightedWords = {};
+
 
   PageCubit(Function() initialState, this.studentId) : super(initialState()) {
     if (initialState() is InitialMultiPageState) {
       pageNumber = (initialState() as InitialMultiPageState).startPage;
+      endPage = (initialState() as InitialMultiPageState).endPage;
       startPage = pageNumber;
+      initialMultiPage();
+
     } else if (initialState() is InitialOnePageState) {
+      initialOnePage();
+
       pageNumber = (initialState() as InitialOnePageState).pageNumber;
     }
-    initialPage();
   }
 
-  void initialPage() {
+  Future<void> initialOnePage() async {
     emit(LoadingPageState());
+
+    var response = await ApiService.getOneDetails(
+      pageNumber: pageNumber,
+      studentId: studentId,
+    );
+    notes = Note.getListFromObject(response);
+
+    getPageData();
+
+    try {
+
+      emit(SuccessPageState());
+    } catch (e) {
+      emit(FailToStartPage(error: e.toString()));
+    }
+  }
+  Future<void> initialMultiPage() async {
+    emit(LoadingPageState());
+
+    var response = await ApiService.getMultiDetails(
+      startPage:startPage,
+      endPage:endPage,
+      saberId: studentId,
+    );
+    notes = Note.getListFromObject(response);
+    getPageData();
+
+    try {
+
+      emit(SuccessPageState());
+    } catch (e) {
+      emit(FailToStartPage(error: e.toString()));
+    }
+  }
+
+  void getPageData() {
     int start = -1;
     int end = -1;
     pageLines = [];
@@ -41,39 +87,12 @@ class PageCubit extends Cubit<PageStates> {
     }
     List<String> lines = mushafLines.sublist(start, end);
     int lineNumber = 0;
-    lines.forEach((line) {
+    for (var line in lines) {
       lineNumber++;
       pageLines.add(
         Line(text: line, pageNumber: pageNumber, lineNumber: lineNumber),
       );
-    });
-
-    emit(SuccessPageState());
-  }
-
-  void saveNote({
-    required int lineNumber,
-    required int wordOrder,
-    required String falseType,
-  }) {
-    notes.add(
-      Note(
-        pageNumber: pageNumber,
-        lineNumber: lineNumber,
-        wordNumber: wordOrder,
-        falseType: falseType,
-      ),
-    );
-  }
-
-  void highlightWord({required int lineNumber, required int wordOrder}) {
-    _highlightedWords.add('$lineNumber-$wordOrder');
-    emit(WordHighlightPageState(highlightedWords: _highlightedWords));
-  }
-
-  void unhighlightWord({required int lineNumber, required int wordOrder}) {
-    _highlightedWords.remove('$lineNumber-$wordOrder');
-    emit(WordHighlightPageState(highlightedWords: _highlightedWords));
+    }
   }
 
   bool isHighlighted(int lineNumber, int wordOrder) {
@@ -81,6 +100,7 @@ class PageCubit extends Cubit<PageStates> {
   }
 
   String surNames() {
+    if (pageNumber > 604 || pageNumber < 1) return "";
     List pagesData = quran.getPageData(pageNumber);
 
     String text = "";
@@ -92,10 +112,9 @@ class PageCubit extends Cubit<PageStates> {
 
   void changeToPage({required int number}) {
     pageNumber = startPage + number;
-    initialPage();
+    getPageData();
+    emit(SuccessPageState());
   }
-
-  void savePageTest() {}
 
   String tajweedNotes() {
     return notes
@@ -118,7 +137,7 @@ class PageCubit extends Cubit<PageStates> {
         .toString();
   }
 
-  Color containerColor({
+  List<Color> containerColor({
     required int wordOrder,
     required int lineNumber,
     required Color defaultColor,
@@ -131,21 +150,28 @@ class PageCubit extends Cubit<PageStates> {
                   note.pageNumber == pageNumber),
         )
         .isEmpty) {
-      return defaultColor;
+      return [defaultColor, defaultColor];
     }
-    Note note =
-        notes.where(
+    List<Note> currentNotes =
+        notes
+            .where(
               (note) =>
                   (note.lineNumber == lineNumber &&
                       note.wordNumber == wordOrder &&
                       note.pageNumber == pageNumber),
-            ).single;
-    if (note.falseType == FalseTypes.hafez) {
-      return Colors.red[100]!;
-    } else if (note.falseType == FalseTypes.tajweed) {
-      return Colors.green[100]!;
-    } else {
-      return Colors.black12;
+            )
+            .toList();
+    List<Color> colors = [];
+    for (var element in currentNotes) {
+      if (element.falseType == FalseTypes.hafez) {
+        colors.add(Colors.red[100]!);
+      } else if (element.falseType == FalseTypes.tajweed) {
+        colors.add(Colors.green[100]!);
+      } else {
+        colors.add(Colors.black12);
+      }
     }
+    if (colors.length < 2) colors.add(colors[0]);
+    return colors;
   }
 }

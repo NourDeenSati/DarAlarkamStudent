@@ -3,6 +3,7 @@ class APIEndpoints {
   static _AuthEndPoint authEndPoint = _AuthEndPoint();
   static _TeacherPoints teacherPoints = _TeacherPoints();
   static _StudentPoints studentPoints = _StudentPoints();
+  static _MushafEndPoints mushafEndPoints = _MushafEndPoints();
 
   static _AttendanceEndPoint attendanceEndPoint = _AttendanceEndPoint(); // جديد
   static _notesEndPoint notesEndPoint = _notesEndPoint();
@@ -12,7 +13,10 @@ class _AuthEndPoint {
   final String login = 'student/login';
   final String logout = 'student/logout';
 }
-
+class _MushafEndPoints {
+  String getDetailsRec(int id) => 'student/recitations/$id/show';
+  String getDetailsSaber(int id) => 'student/sabrs/$id/show';
+}
 class _TeacherPoints {
   final String students = 'teacher/circle/students';
   final String data = 'teacher/circle/info';

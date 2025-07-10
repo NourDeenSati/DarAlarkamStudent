@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ohud/controllers/ArchiveController.dart';
+import 'package:ohud/mushaf/views/multi_page_view.dart';
 import 'package:shimmer/shimmer.dart';
 class SabrsArchiveSheet extends StatefulWidget {
   const SabrsArchiveSheet({Key? key}) : super(key: key);
@@ -21,7 +22,6 @@ class _SabrsArchiveSheetState extends State<SabrsArchiveSheet> {
       ctrl.fetchSabrs();
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -86,11 +86,16 @@ class _SabrsArchiveSheetState extends State<SabrsArchiveSheet> {
               ),
               const Divider(),
               // عرض فقط الأجزاء المسبرة
-              ...sabrs.where((s) => s.sabrred).map((s) {
-                return ListTile(
-                  leading: Icon(Icons.check_circle, color: Colors.green),
-                  title: Text('جزء ${s.juz}'),
-                  subtitle: Text(s.result ?? 'لم يُسجل نتيجة'),
+              ...sabrs.map((s) {
+                return GestureDetector(
+                  onTap: (){
+                    Get.to(MultiPageView(startPage: s.startPage(), endPage: s.endPage(), studentId: s.id.toString()));
+                  },
+                  child: ListTile(
+                    leading: Icon(Icons.check_circle, color: Colors.green),
+                    title: Text('${s.juzs.length>1?"أجزاء":"جزء"} ${s.juzs}'),
+                    subtitle: Text(s.result ?? 'لم يُسجل نتيجة'),
+                  ),
                 );
               }).toList(),
               const SizedBox(height: 16),

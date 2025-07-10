@@ -9,11 +9,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class StudentArchiveController extends GetxController {
   // Rx lists / objects
-  var notes       = <NoteModel>[].obs;
-  var attendance  = Rxn<AttendanceModel>();
+  var notes = <NoteModel>[].obs;
+  var attendance = Rxn<AttendanceModel>();
   var recitations = <RecitationHistoryRecord>[].obs;
-  var sabrs       = <SabrHistoryRecord>[].obs;
-  var isLoading   = false.obs;
+  var sabrs = <SabrHistoryRecord>[].obs;
+  var isLoading = false.obs;
 
   // helper to get token + headers
   Future<Map<String, String>> _buildHeaders() async {
@@ -29,16 +29,17 @@ class StudentArchiveController extends GetxController {
     isLoading.value = true;
     final headers = await _buildHeaders();
     final res = await http.get(
-      Uri.parse(APIEndpoints.baseUrl+'student/notes'),
+      Uri.parse('${APIEndpoints.baseUrl}student/notes'),
       headers: headers,
     );
     print(res.request);
     print(res.body);
     if (res.statusCode == 200) {
       final list = json.decode(res.body) as List;
-      notes.value = list
-        .map((e) => NoteModel.fromJson(e as Map<String, dynamic>))
-        .toList();
+      notes.value =
+          list
+              .map((e) => NoteModel.fromJson(e as Map<String, dynamic>))
+              .toList();
     } else {
       Get.snackbar('خطأ', 'فشل في جلب الملاحظات (${res.statusCode})');
     }
@@ -49,7 +50,7 @@ class StudentArchiveController extends GetxController {
     isLoading.value = true;
     final headers = await _buildHeaders();
     final res = await http.get(
-      Uri.parse(APIEndpoints.baseUrl+'student/attendance'),
+      Uri.parse('${APIEndpoints.baseUrl}student/attendance'),
       headers: headers,
     );
     if (res.statusCode == 200) {
@@ -62,17 +63,19 @@ class StudentArchiveController extends GetxController {
   }
 
   Future<void> fetchRecitations() async {
+    recitations.value = [];
     isLoading.value = true;
     final headers = await _buildHeaders();
     final res = await http.get(
-      Uri.parse(APIEndpoints.baseUrl+'student/recitations-history'),
+      Uri.parse('${APIEndpoints.baseUrl}student/recitations'),
       headers: headers,
     );
+
     if (res.statusCode == 200) {
-      final list = (json.decode(res.body)['history'] as List)
-          .map((e) => RecitationHistoryRecord.fromJson(e))
-          .toList();
-      recitations.value = list;
+      List<Map<String, dynamic>> items = jsonDecode(res.body)["items"].cast<Map<String,dynamic>>();
+      for (var item in items) {
+        recitations.add(RecitationHistoryRecord.fromJson(item));
+      }
     } else {
       Get.snackbar('خطأ', 'فشل في جلب سجل التسميع (${res.statusCode})');
     }
@@ -80,17 +83,19 @@ class StudentArchiveController extends GetxController {
   }
 
   Future<void> fetchSabrs() async {
+    sabrs.value=[];
     isLoading.value = true;
     final headers = await _buildHeaders();
     final res = await http.get(
-      Uri.parse(APIEndpoints.baseUrl+'student/sabrs-history'),
+      Uri.parse('${APIEndpoints.baseUrl}student/sabrs'),
       headers: headers,
     );
     if (res.statusCode == 200) {
-      final list = (json.decode(res.body)['history'] as List)
-          .map((e) => SabrHistoryRecord.fromJson(e))
-          .toList();
-      sabrs.value = list;
+      List<Map<String, dynamic>> items = jsonDecode(res.body)["items"].cast<Map<String,dynamic>>();
+      for (var item in items) {
+        sabrs.add(SabrHistoryRecord.fromJson(item));
+      }
+
     } else {
       Get.snackbar('خطأ', 'فشل في جلب سجل السبر (${res.statusCode})');
     }

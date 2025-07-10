@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:ohud/controllers/ArchiveController.dart';
+import 'package:ohud/mushaf/views/one_page_view.dart';
 import 'package:shimmer/shimmer.dart';
 
 class RecitationArchiveSheet extends StatefulWidget {
@@ -60,7 +61,7 @@ class _RecitationArchiveSheetState extends State<RecitationArchiveSheet> {
           );
         }
 
-        final heard = ctrl.recitations.where((r) => r.recited).toList();
+        final heard = ctrl.recitations;
 
         if (heard.isEmpty) {
           return const Padding(
@@ -72,7 +73,7 @@ class _RecitationArchiveSheetState extends State<RecitationArchiveSheet> {
         // حساب نسب التقييمات
         final total = heard.length;
         final excellent = heard.where((e) => e.result == 'ممتاز').length;
-        final verygood = heard.where((e) => e.result == 'جيد جداً' ).length;
+        final verygood = heard.where((e) => e.result == 'جيد جداً').length;
         final good = heard.where((e) => e.result == 'جيد').length;
         final retry = heard.where((e) => e.result == 'إعادة').length;
         // final none =
@@ -114,13 +115,23 @@ class _RecitationArchiveSheetState extends State<RecitationArchiveSheet> {
                       'ممتاز',
                       excellent,
                       total,
-                      Colors.green
+                      Colors.green,
                     ),
                     const SizedBox(height: 8),
-                    _buildLinearProgress('جيد جداً', verygood , total, const Color.fromARGB(255, 152, 155, 0)),
+                    _buildLinearProgress(
+                      'جيد جداً',
+                      verygood,
+                      total,
+                      const Color.fromARGB(255, 152, 155, 0),
+                    ),
                     const SizedBox(height: 8),
 
-                    _buildLinearProgress('جيد', good, total, const Color.fromARGB(255, 255, 170, 0)),
+                    _buildLinearProgress(
+                      'جيد',
+                      good,
+                      total,
+                      const Color.fromARGB(255, 255, 170, 0),
+                    ),
                     const SizedBox(height: 8),
                     _buildLinearProgress(
                       'إعادة',
@@ -141,6 +152,10 @@ class _RecitationArchiveSheetState extends State<RecitationArchiveSheet> {
                   title: Text('صفحة ${item.page}'),
                   subtitle: Text(item.result ?? 'لم يُسجل نتيجة'),
                   onTap: () {
+                    print(item.id);
+                    Get.to(
+                      OnePageView(pageNumber: item.page, pageId: item.id.toString()),
+                    );
                     // يمكن فتح التفاصيل هنا
                   },
                 );
@@ -155,35 +170,36 @@ class _RecitationArchiveSheetState extends State<RecitationArchiveSheet> {
   }
 
   Widget _buildLinearProgress(String label, int count, int total, Color color) {
-  final percent = total == 0 ? 0.0 : count / total;
-  final percentText = total == 0
-      ? '0% (0 صفحة)'
-      : '${(percent * 100).toStringAsFixed(0)}% ($count صفحة)';
+    final percent = total == 0 ? 0.0 : count / total;
+    final percentText =
+        total == 0
+            ? '0% (0 صفحة)'
+            : '${(percent * 100).toStringAsFixed(0)}% ($count صفحة)';
 
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(color: color, fontWeight: FontWeight.w600),
-          ),
-          Text(
-            percentText,
-            style: TextStyle(color: color, fontWeight: FontWeight.w600),
-          ),
-        ],
-      ),
-      const SizedBox(height: 4),
-      LinearProgressIndicator(
-        value: percent,
-        color: color,
-        backgroundColor: color.withOpacity(0.3),
-        minHeight: 12,
-      ),
-    ],
-  );
-}
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: TextStyle(color: color, fontWeight: FontWeight.w600),
+            ),
+            Text(
+              percentText,
+              style: TextStyle(color: color, fontWeight: FontWeight.w600),
+            ),
+          ],
+        ),
+        const SizedBox(height: 4),
+        LinearProgressIndicator(
+          value: percent,
+          color: color,
+          backgroundColor: color.withOpacity(0.3),
+          minHeight: 12,
+        ),
+      ],
+    );
+  }
 }

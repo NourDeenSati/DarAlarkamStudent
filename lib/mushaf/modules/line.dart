@@ -32,6 +32,17 @@ class Line {
     // TODO: implement toString
     return "{center:$isCenter}";
   }
+
+  isShort() {
+    int a= 0;
+    for (var word in words) {
+      a+=word.length;
+    }
+    print(a);
+    print(a<50?30:0);
+    return a<47;
+
+  }
 }
 
 enum LineTypes { surahName, basmallah, normalLine }
