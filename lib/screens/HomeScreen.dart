@@ -34,7 +34,7 @@ class HomeScreen extends GetView<HomeController> {
     await logoutController.logout();
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
-    await prefs.remove('name');
+    await prefs.remove('user_name');
 
     Get.offAll(() => SigninScreen());
   }

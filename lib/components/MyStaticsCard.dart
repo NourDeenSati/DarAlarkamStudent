@@ -79,14 +79,14 @@ class MotivationalStatsSection extends StatelessWidget {
                     Text(
                       '${stats.points} نقطة',
                       style: const TextStyle(
-                        fontSize: 20.0,
+                        fontSize: 17.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
                     const Text(
                       'استعن بالله ولا تعجز  ',
-                      style: TextStyle(fontSize: 14.0, color: Colors.grey),
+                      style: TextStyle(fontSize: 12.0, color: Colors.grey),
                     ),
                   ],
                 ),
@@ -115,9 +115,9 @@ class MotivationalStatsSection extends StatelessWidget {
                         stats.improvementPercent >= 0
                             ? LucideIcons.trendingUp
                             : LucideIcons.trendingDown,
-                    title: 'نقاط التحسن',
+                    title: 'نقاط الأسبوع',
                     value: '${stats.gainThisWeek} نقطة',
-                    subtitle: ' التحسن سابقاً: ${stats.gainLastWeek}',
+                    subtitle: ' الأسبوع السابق: ${stats.gainLastWeek}',
                   ),
                 ),
                 const SizedBox(width: 12),
