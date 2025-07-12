@@ -29,15 +29,23 @@ class HomeScreen extends GetView<HomeController> {
     my_carousel.MyCarouselController(),
   );
   final PageController pageController = PageController(viewportFraction: 0.7);
+Future<void> logout() async {
+  await logoutController.logout();
 
-  Future<void> logout() async {
-    await logoutController.logout();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token');
-    await prefs.remove('user_name');
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove('token');
+  await prefs.remove('user_name');
+  await prefs.remove('circle_id');
+  await prefs.remove('user_id');
 
-    Get.offAll(() => SigninScreen());
-  }
+  // حذف HomeController وغيره إن وجد
+  Get.delete<HomeController>();
+
+  // أو حذف كل شيء مرة واحدة
+  // Get.reset();
+
+  Get.offAll(() => SigninScreen());
+}
 
   @override
   Widget build(BuildContext context) {
@@ -145,119 +153,120 @@ class _MainContent extends StatelessWidget {
 
   @override
   @override
-Widget build(BuildContext context) {
-  return RefreshIndicator(
-    onRefresh: () async {
-      await studentController.loadData();
-      await archiveCtrl.fetchAttendance();
-      await archiveCtrl.fetchNotes(); // مثلاً لجلب كل أنواع الأرشيف
-      await archiveCtrl.fetchRecitations();
-      await archiveCtrl.fetchSabrs();
-    },
-    child: SingleChildScrollView(
-      physics: const AlwaysScrollableScrollPhysics(), // مهم لتفعيل السحب حتى لو المحتوى قصير
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // const SizedBox(height: 30),
-            // const MyCarousel(),
-            const SizedBox(height: 40),
-            const MotivationalStatsSection(),
-            const SizedBox(height: 40),
-            Row(
-              children: const [
-                Icon(Iconsax.add_square, color: Color(0XFF049977)),
-                SizedBox(width: 15),
-                Text(
-                  'الأرشيف :',
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                Spacer(),
-              ],
-            ),
-            const SizedBox(height: 40),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                // قرآن
-                MyAddContainer(
-                  text: 'قرآن',
-                  iconData: Iconsax.book,
-                  onTap: () {
-                    showModalBottomSheet(
-                      isDismissible: true,
-                      enableDrag: true,
-                      context: context,
-                      isScrollControlled: true,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(20),
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        await studentController.loadData();
+        await archiveCtrl.fetchAttendance();
+        await archiveCtrl.fetchNotes(); // مثلاً لجلب كل أنواع الأرشيف
+        await archiveCtrl.fetchRecitations();
+        await archiveCtrl.fetchSabrs();
+      },
+      child: SingleChildScrollView(
+        physics:
+            const AlwaysScrollableScrollPhysics(), // مهم لتفعيل السحب حتى لو المحتوى قصير
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // const SizedBox(height: 30),
+              // const MyCarousel(),
+              const SizedBox(height: 40),
+              const MotivationalStatsSection(),
+              const SizedBox(height: 40),
+              Row(
+                children: const [
+                  Icon(Iconsax.add_square, color: Color(0XFF049977)),
+                  SizedBox(width: 15),
+                  Text(
+                    'الأرشيف :',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  Spacer(),
+                ],
+              ),
+              const SizedBox(height: 40),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  // قرآن
+                  MyAddContainer(
+                    text: 'قرآن',
+                    iconData: Iconsax.book,
+                    onTap: () {
+                      showModalBottomSheet(
+                        isDismissible: true,
+                        enableDrag: true,
+                        context: context,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
                         ),
-                      ),
-                      builder: (_) => RecitationArchiveSheet(),
-                    );
-                  },
-                ),
-                // حضور
-                MyAddContainer(
-                  text: 'حضور',
-                  iconData: Iconsax.card,
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(20),
+                        builder: (_) => RecitationArchiveSheet(),
+                      );
+                    },
+                  ),
+                  // حضور
+                  MyAddContainer(
+                    text: 'حضور',
+                    iconData: Iconsax.card,
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
                         ),
-                      ),
-                      builder: (_) => AttendanceArchiveSheet(),
-                    );
-                  },
-                ),
-                // ملاحظات
-                MyAddContainer(
-                  text: 'ملاحظات',
-                  iconData: Iconsax.note_text,
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(20),
+                        builder: (_) => AttendanceArchiveSheet(),
+                      );
+                    },
+                  ),
+                  // ملاحظات
+                  MyAddContainer(
+                    text: 'ملاحظات',
+                    iconData: Iconsax.note_text,
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
                         ),
-                      ),
-                      builder: (_) => NotesArchiveSheet(),
-                    );
-                  },
-                ),
-                // السبر
-                MyAddContainer(
-                  text: 'السبر',
-                  iconData: Icons.quiz_outlined,
-                  onTap: () {
-                    showModalBottomSheet(
-                      context: context,
-                      isScrollControlled: true,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(20),
+                        builder: (_) => NotesArchiveSheet(),
+                      );
+                    },
+                  ),
+                  // السبر
+                  MyAddContainer(
+                    text: 'السبر',
+                    iconData: Icons.quiz_outlined,
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
                         ),
-                      ),
-                      builder: (_) => const SabrsArchiveSheet(),
-                    );
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 40),
-          ],
+                        builder: (_) => const SabrsArchiveSheet(),
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
 }
