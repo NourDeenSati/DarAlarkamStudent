@@ -29,8 +29,7 @@ dependencies:
   shimmer: ^3.0.0
   percent_indicator: ^4.2.5
   fl_chart: ^1.0.0
-  shorebird_code_push: ^2.0.4
-  
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -62,7 +61,6 @@ flutter:
     - assets/mushaf_assets/frame.jpg
     - assets/mushaf_assets/ayah_frame.png
     - assets/mushaf_assets/frame_t.jpg
-    - shorebird.yaml
 
   fonts:
     - family: IBMPlexSansArabic
