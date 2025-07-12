@@ -42,17 +42,46 @@ class AppFunctions {
                   ),
                 ),
                 const SizedBox(height: 24),
-                Text(
-                  "أخطاء التجويد : $tajweedNotes",
-                  textDirection: TextDirection.rtl,
+                SizedBox(
+                  width: 150,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "أخطاء التجويد : $tajweedNotes",
+                        textDirection: TextDirection.rtl,
+                      ),
+                      CircleAvatar(backgroundColor: Colors.green[100],radius: 8),
+
+                    ],
+                  ),
                 ),
-                Text(
-                  "أخطاء التشكيل : $tashkeelNotes",
-                  textDirection: TextDirection.rtl,
+                SizedBox(
+                  width: 150,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "أخطاء التشكيل : $tashkeelNotes",
+                        textDirection: TextDirection.rtl,
+                      ),
+                      CircleAvatar(backgroundColor: Colors.black12, radius: 8),
+
+                    ],
+                  ),
                 ),
-                Text(
-                  "أخطاء الحفظ : $hafezNotes",
-                  textDirection: TextDirection.rtl,
+                SizedBox(
+                  width: 150,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        "أخطاء الحفظ : $hafezNotes",
+                        textDirection: TextDirection.rtl,
+                      ),
+                      CircleAvatar(backgroundColor: Colors.red[100],radius: 8),
+                    ],
+                  ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
